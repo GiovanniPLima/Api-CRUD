@@ -23,7 +23,7 @@ func main() {
 	//DELETE - DELETE
 	router.HandleFunc("/ususario/{id}", controller.DeletarUsuario).Methods(http.MethodDelete)
 
-	// Cria o servidor Par fazer o C-R-U-D
+	// Cria o servidor Para fazer o C-R-U-D
 	fmt.Println("Servidor Rodando")
 	log.Fatal(http.ListenAndServe(":5000", router))
 }
