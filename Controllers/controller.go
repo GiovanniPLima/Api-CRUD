@@ -133,3 +133,77 @@ func BuscarUsuario(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 }
+
+func AtualizarUsuario(w http.ResponseWriter, r *http.Request) {
+
+	params := mux.Vars(r)
+
+	ID, erro := strconv.ParseUint(params["id"], 10, 32)
+	if erro != nil {
+		w.Write([]byte("Erro ao Converter para Int"))
+		return
+	}
+	corpoRequisicao, erro := ioutil.ReadAll(r.Body)
+	if erro != nil {
+		w.Write([]byte("Falha ao ler o Corpo"))
+		return
+	}
+
+	var usuario usuario
+	if erro := json.Unmarshal(corpoRequisicao, &usuario); erro != nil {
+		w.Write([]byte("Erro ao converter o usuario para Struct"))
+		return
+	}
+
+	db, erro := data.Conectar()
+	if erro != nil {
+		w.Write([]byte("Erro ao Conectar no banco"))
+		return
+	}
+	defer db.Close()
+
+	statement, erro := db.Prepare("UPDATE usuarios set nome = ?, email = ? where id = ?")
+	if erro != nil {
+		w.Write([]byte("Erro ao Criar o Statement "))
+		return
+	}
+	defer statement.Close()
+
+	if _, erro := statement.Exec(&usuario.Nome, &usuario.Email, ID); erro != nil {
+		w.Write([]byte("Erro ao Atualizar o Usuario"))
+		return
+	}
+
+	w.WriteHeader(http.StatusNoContent)
+}
+
+func DeletarUsuario(w http.ResponseWriter, r *http.Request) {
+	params := mux.Vars(r)
+
+	ID, erro := strconv.ParseUint(params["id"], 10, 32)
+	if erro != nil {
+		w.Write([]byte("Erro ao Conerter para INT"))
+		return
+	}
+
+	db, erro := data.Conectar()
+	if erro != nil {
+		w.Write([]byte("Erro ao Conectar no Banco de Dados"))
+		return
+	}
+	defer db.Close()
+
+	statement, erro := db.Prepare("DELETE FROM usuarios where id = ? ")
+	if erro != nil {
+		w.Write([]byte("Erro ao criar o Statement "))
+		return
+	}
+	defer statement.Close()
+
+	if _, erro := statement.Exec(ID); erro != nil {
+		w.Write([]byte("Erro ao Deletar Usuario"))
+		return
+	}
+
+	w.WriteHeader(http.StatusNoContent)
+}

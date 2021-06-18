@@ -18,6 +18,10 @@ func main() {
 	router.HandleFunc("/usuarios", controller.BuscarUsuarios).Methods(http.MethodGet)
 	//READ - GET BY ID
 	router.HandleFunc("/usuarios/{id}", controller.BuscarUsuario).Methods(http.MethodGet)
+	//UPDATE - PUT
+	router.HandleFunc("/usuarios/{id}", controller.AtualizarUsuario).Methods(http.MethodPut)
+	//DELETE - DELETE
+	router.HandleFunc("/ususario/{id}", controller.DeletarUsuario).Methods(http.MethodDelete)
 
 	// Cria o servidor Par fazer o C-R-U-D
 	fmt.Println("Servidor Rodando")
